@@ -1,0 +1,31 @@
+services:
+  tests:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: savia-tests
+    command: >
+      pytest app/tests --cov=app --cov-report=term-missing --alluredir=/savia/coverage/allure-results -v
+    volumes:
+      - ./app:/savia/app
+      - ./coverage:/savia/coverage
+      - ./.env:/savia/.env
+    environment:
+      - DEBUG=true
+    networks:
+      - savia-network
+
+  allure:
+    image: "frankescobar/allure-docker-service:latest"
+    container_name: allure-report
+    ports:
+      - "5050:5050"
+    volumes:
+      - ./coverage/allure-results:/app/allure-results
+    command: "allure serve /app/allure-results --port 5050 --host 0.0.0.0"
+    networks:
+      - savia-network
+
+networks:
+  savia-network:
+    driver: bridge
