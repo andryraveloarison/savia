@@ -9,11 +9,14 @@ Savia is a smart decision engine designed to assist service technicians in analy
 - (Optional) Python 3.12+
 
 ### Running the Application
-To start the API in production mode:
-```bash
+# Starting the app
+
+# Option 1: Using the script
 chmod +x run_app.sh
 ./run_app.sh
-```
+
+# Option 2: Directly with Docker Compose
+docker compose up --build
 The API will be available at `http://localhost:8000`.
 
 ### Running Tests
@@ -49,4 +52,3 @@ The project follows **Clean Architecture** principles:
 
 ## 📄 License
 Internal MVP - Proprietary
-# savia
