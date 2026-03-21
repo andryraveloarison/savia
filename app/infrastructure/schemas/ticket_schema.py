@@ -69,6 +69,7 @@ class AuditOutput(BaseModel):
     analyzed_at: str
     engine_version: str
     decision_type: str
+    provider: str
 
 
 class TicketAnalysisResponse(BaseModel):

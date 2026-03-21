@@ -1,5 +1,5 @@
 from app.domain.entities.ticket import TicketEntity
-from app.shared.types.enums import Category, Urgency, Action, CompletenessStatus
+from app.domain.types.enums import Category, Urgency, Action, CompletenessStatus
 from app.core.config import get_settings
 from app.shared.constants.equipment import EQUIPMENT_CATEGORY_MAP
 

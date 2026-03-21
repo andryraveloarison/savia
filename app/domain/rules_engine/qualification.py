@@ -2,7 +2,7 @@
 Règles de qualification du ticket.
 Détermine la catégorie et l'urgence en fonction du contenu.
 """
-from app.shared.types.enums import Category, Urgency
+from app.domain.types.enums import Category, Urgency
 from app.shared.constants.keywords import (
     KEYWORDS_HEATING, KEYWORDS_PLUMBING, KEYWORDS_ELECTRICAL,
     KEYWORDS_VENTILATION, KEYWORDS_HIGH_URGENCY,

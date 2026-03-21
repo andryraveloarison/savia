@@ -1,6 +1,7 @@
 from datetime import datetime, timezone
-from app.shared.types.enums import DecisionType, Action
+from app.domain.types.enums import DecisionType, Action
 from app.core.config import get_settings
+from app.shared.types.version import VersionStr
 
 settings = get_settings()
 

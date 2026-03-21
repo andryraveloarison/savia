@@ -3,7 +3,7 @@ from app.domain.rules_engine.qualification import qualify_ticket
 from app.domain.rules_engine.completeness import check_completeness, has_exploitable_attachment
 from app.domain.rules_engine.orientation import decide_action
 from app.domain.rules_engine.scoring import compute_confidence_score
-from app.shared.types.enums import Category, Urgency, Action
+from app.domain.types.enums import Category, Urgency, Action
 from app.shared.utils.text import normalize_text, count_keywords
 # ─── Tests Qualification ──────────────────────────────────────────────
 

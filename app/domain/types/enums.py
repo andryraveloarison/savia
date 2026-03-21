@@ -1,6 +1,5 @@
 from enum import Enum
 
-
 class Category(str, Enum):
     HEATING = "heating"
     PLUMBING = "plumbing"

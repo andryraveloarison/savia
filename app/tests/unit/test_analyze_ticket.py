@@ -50,7 +50,8 @@ from app.infrastructure.schemas.ticket_schema import TicketInput
         "expected_action": "schedule_intervention",
     }
 ])
-def test_analyze_ticket(tc):
+@pytest.mark.anyio
+async def test_analyze_ticket(tc):
     payload = TicketInput(
         ticket_id=f"TEST-{tc['id']}",
         message=tc['message'],
@@ -69,7 +70,7 @@ def test_analyze_ticket(tc):
         attachment_type=allure.attachment_type.JSON
     )
 
-    response = analyze_ticket(payload)
+    response = await analyze_ticket(payload)
 
     assert response.qualification.category == tc["expected_cat"]
     assert response.qualification.urgency == tc["expected_urg"]

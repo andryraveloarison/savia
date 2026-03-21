@@ -1,5 +1,5 @@
 from app.domain.entities.ticket import TicketEntity
-from app.shared.types.enums import CompletenessStatus
+from app.domain.types.enums import CompletenessStatus
 from app.domain.rules_engine.completeness import check_completeness
 
 

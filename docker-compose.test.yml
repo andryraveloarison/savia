@@ -12,6 +12,8 @@ services:
       - ./.env:/savia/.env
     environment:
       - DEBUG=true
+      - AI_ENABLED=false
+      - AI_PROVIDER=mock
     networks:
       - savia-network
 

@@ -2,7 +2,7 @@
 Règles d'orientation.
 Décide de l'action à entreprendre en fonction de la situation.
 """
-from app.shared.types.enums import Action, Urgency
+from app.domain.types.enums import Action, Urgency
 from app.shared.constants.equipment import EQUIPMENT_CATEGORY_MAP
 from app.shared.constants.keywords import KEYWORDS_REPLACEMENT
 
