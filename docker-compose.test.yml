@@ -5,7 +5,7 @@ services:
       dockerfile: Dockerfile
     container_name: savia-tests
     command: >
-      pytest app/tests --cov=app --cov-report=term-missing --cov-report=xml:/savia/coverage/coverage.xml --alluredir=/savia/coverage/allure-results -v
+      pytest app/tests --cov=app --cov-report=term-missing --cov-report=xml:/savia/coverage.xml --alluredir=/savia/coverage/allure-results -v
     volumes:
       - ./app:/savia/app
       - ./coverage:/savia/coverage
