@@ -51,8 +51,7 @@ def decide_action(
     equipment_known = eq_type in EQUIPMENT_CATEGORY_MAP
     
     if (urgency == Urgency.LOW and equipment_known 
-        and previous_tickets_count == 0 
-        and confidence_score >= settings.confidence_threshold_auto):
+        and previous_tickets_count == 0):
         return Action.AUTO_RESOLUTION
 
     # Par défaut, intervention

@@ -14,16 +14,13 @@ from app.domain.services.justification_service import JustificationService
 from app.domain.services.audit_service import AuditService
 from app.domain.services.ai_analysis_service import AIAnalysisService
 
-from app.infrastructure.ai.mock_client import MockAIClient
-from app.infrastructure.ai.ollama_client import OllamaClient
+from app.infrastructure.ai.adapter import AIAdapter
 from app.infrastructure.schemas.ticket_schema import TicketInput, TicketAnalysisResponse
 
 settings = get_settings()
 
 def get_ai_client():
-    if settings.ai_provider == "ollama":
-        return OllamaClient(base_url=settings.ollama_url)
-    return MockAIClient()
+    return AIAdapter()
 
 async def execute(ticket: TicketEntity) -> dict:
     """
@@ -59,11 +56,7 @@ async def execute(ticket: TicketEntity) -> dict:
     justification.extend(analysis.get("justifications", []))
     
     # 6. Audit
-    audit = AuditService.run(
-        analysis["action"], 
-        analysis["confidence_score"]
-    )
-    audit["provider"] = analysis.get("provider", "unknown")
+    audit = AuditService.run(analysis["provider"])
 
     return {
         "ticket_id": ticket.ticket_id,

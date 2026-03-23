@@ -1,14 +1,14 @@
 import logging
 import time
 from contextvars import ContextVar
-from pythonjsonlogger import jsonlogger
+from pythonjsonlogger.json import JsonFormatter
 
 from app.shared.types.common import CorrelationId, DurationMs
 from app.shared.types.json import JsonDict
 
 correlation_id_ctx: ContextVar[CorrelationId] = ContextVar("correlation_id", default="n/a")
 
-class CustomJsonFormatter(jsonlogger.JsonFormatter):
+class CustomJsonFormatter(JsonFormatter):
     def add_fields(self, log_record: JsonDict, record: logging.LogRecord, message_dict: JsonDict):
         super(CustomJsonFormatter, self).add_fields(log_record, record, message_dict)
         log_record["correlation_id"] = correlation_id_ctx.get()

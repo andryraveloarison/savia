@@ -24,7 +24,7 @@ class AIAnalysisService:
             try:
                 ai_result = await ai_client.analyze_ticket(ticket)
                 # Vérification du seuil de confiance    
-                if ai_result.confidence_score < settings.confidence_threshold_escalate:
+                if ai_result.confidence_score < settings.confidence_threshold_ai:
                     logger.warning(f"AI confidence too low ({ai_result.confidence_score}), triggering fallback.")
                     use_fallback = True
             except Exception as e:
@@ -58,5 +58,5 @@ class AIAnalysisService:
             "action": ai_result.action,
             "confidence_score": ai_result.confidence_score,
             "justifications": ai_result.justifications,
-            "provider": f"ai_{settings.ai_provider}"
+            "provider": f"ai_assisted"
         }

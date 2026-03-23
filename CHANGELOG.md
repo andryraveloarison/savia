@@ -2,6 +2,23 @@
 
 All notable changes to the Savia project will be documented in this file.
 
+## [1.1.0] - 2026-03-23
+
+### Added
+- **AI Layer Orchestration**: Added `AIAnalysisService` to manage AI analysis and deterministic fallbacks.
+- **AIAdapter**: Introduced a mockable `AIAdapter` for flexible AI integration.
+- **Enhanced Payload Validation**: Made `attachments` and `history` mandatory in the `TicketInput` schema to ensure data completeness.
+- **New Examples**: Added comprehensive request examples (`examples.py`) for different service types (heating, plumbing, electrical).
+
+### Changed
+- **Audit logic Refactoring**: Simplified `AuditService` to focus on decision provider transparency.
+- **Dependency Optimization**: Removed heavy ML dependencies (`scikit-learn`, `pandas`, `joblib`) in favor of a thinner, more portable adapter-based approach.
+- **Modernized Codebase**: Resolved multiple deprecation warnings related to Pydantic V2, Starlette status codes, and JSON logging.
+
+### Fixed
+- **Pydantic Validation errors**: Fixed various validation issues in API responses and audit logs.
+- **Test Payloads**: Updated all tests to work with the new mandatory fields.
+
 ## [1.0.0] - 2026-03-19
 
 ### Added

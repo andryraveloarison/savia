@@ -58,8 +58,9 @@ client = TestClient(app)
 ])
 def test_analyze_ticket_api(tc):
     payload = {
-        "ticket_id": f"REQ-{tc['id']}",
+        "ticket_id": f"SAV-{tc['id']}",
         "message": tc['message'],
+        "attachments": [],
         "customer": {"id": "C-123", "name": "John Doe"},
         "equipment": {
             "type": tc['eq_type'],

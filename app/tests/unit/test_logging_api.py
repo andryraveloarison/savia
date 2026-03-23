@@ -12,6 +12,7 @@ def test_correlation_id_propagation():
         json={
             "ticket_id": "LOG-1",
             "message": "Test logging",
+            "attachments": [],
             "customer": {"id": "C-1", "name": "John"},
             "equipment": {"type": "boiler", "model": "V-100"},
             "history": {"previous_tickets": 0}
@@ -30,6 +31,7 @@ def test_custom_correlation_id():
         json={
             "ticket_id": "LOG-2",
             "message": "Test logging custom",
+            "attachments": [],
             "customer": {"id": "C-1", "name": "John"},
             "equipment": {"type": "boiler", "model": "V-100"},
             "history": {"previous_tickets": 0}

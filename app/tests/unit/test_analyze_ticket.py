@@ -53,8 +53,9 @@ from app.infrastructure.schemas.ticket_schema import TicketInput
 @pytest.mark.anyio
 async def test_analyze_ticket(tc):
     payload = TicketInput(
-        ticket_id=f"TEST-{tc['id']}",
+        ticket_id=f"SAV-{tc['id']}",
         message=tc['message'],
+        attachments=[],
         customer={"id": "C-001", "name": "Test"},
         equipment={
             "type": tc["eq_type"] or "unknown",

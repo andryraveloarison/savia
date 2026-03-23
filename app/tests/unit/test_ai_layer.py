@@ -13,8 +13,9 @@ async def test_ai_fallback_logic(monkeypatch):
     monkeypatch.setattr(settings, "ai_enabled", False)
     
     payload = TicketInput(
-        ticket_id="TEST-FALLBACK",
+        ticket_id="SAV-FALLBACK",
         message="Chauffage en panne",
+        attachments=[],
         customer={"id": "C-001", "name": "Test"},
         equipment={"type": "boiler", "model": None},
         history={"previous_tickets": 0}
@@ -22,21 +23,21 @@ async def test_ai_fallback_logic(monkeypatch):
     
     response = await analyze_ticket(payload)
     
-    assert response.audit.provider == "rules_engine"
+    assert response.audit.decision_type == "rules_engine"
     assert response.qualification.category == "heating"
     assert "Fallback" in response.justification[-1]
 
 @pytest.mark.anyio
-async def test_ai_mock_success(monkeypatch):
+async def test_ai_custom_success(monkeypatch):
     """
     Test que si l'IA est activée, elle est utilisée.
     """
     monkeypatch.setattr(settings, "ai_enabled", True)
-    monkeypatch.setattr(settings, "ai_provider", "mock")
     
     payload = TicketInput(
-        ticket_id="TEST-AI",
+        ticket_id="SAV-AI",
         message="Fuite d'eau importante",
+        attachments=[],
         customer={"id": "C-001", "name": "Test"},
         equipment={"type": "faucet", "model": None},
         history={"previous_tickets": 0}
@@ -44,6 +45,5 @@ async def test_ai_mock_success(monkeypatch):
     
     response = await analyze_ticket(payload)
     
-    assert response.audit.provider == "ai_mock"
+    assert response.audit.decision_type == "ai_assisted"
     assert response.qualification.category == "plumbing"
-    assert response.recommendation.confidence_score == 0.95

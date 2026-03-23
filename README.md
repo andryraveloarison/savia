@@ -41,11 +41,11 @@ The application is configured via environment variables (or a `.env` file).
 | Variable | Description | Default |
 |----------|-------------|---------|
 | `APP_NAME` | Name of the application | Savia |
-| `APP_VERSION` | Version of the application | 1.0.0 |
+| `APP_VERSION` | Version of the application | 1.1.0 |
 | `DEBUG` | Enable debug logs | `false` |
 | `ENGINE_VERSION` | Internal engine identifier | `savia-mvp-v1` |
 | `CONFIDENCE_THRESHOLD_ESCALATE` | Score below which human is required | `0.50` |
-| `CONFIDENCE_THRESHOLD_AUTO` | Score above which auto-resolution is possible | `0.85` |
+| `CONFIDENCE_THRESHOLD_AI` | Score above which AI is trusted | `0.85` |
 
 ## Architecture
 The project follows **Clean Architecture** principles:

@@ -27,12 +27,12 @@ class HistoryInput(BaseModel):
 
 
 class TicketInput(BaseModel):
-    ticket_id: str = Field(..., min_length=1)
-    message: str = Field(..., min_length=1)
-    attachments: List[AttachmentInput] = Field(default_factory=list)
+    ticket_id: str = Field(..., min_length=1, examples=["SAV-001"])
+    message: str = Field(..., min_length=1, examples=["Mon chauffage ne démarre plus."])
+    attachments: List[AttachmentInput] = Field(..., examples=[[]])
     customer: CustomerInput
     equipment: EquipmentInput
-    history: Optional[HistoryInput] = None
+    history: HistoryInput
 
     @field_validator("message")
     @classmethod
@@ -69,7 +69,6 @@ class AuditOutput(BaseModel):
     analyzed_at: str
     engine_version: str
     decision_type: str
-    provider: str
 
 
 class TicketAnalysisResponse(BaseModel):
