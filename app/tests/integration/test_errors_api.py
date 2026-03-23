@@ -36,18 +36,18 @@ def test_status_400_malformed_json():
     assert response.status_code == HTTP_400_BAD_REQUEST
 
 
-def test_status_422_missing_field():
+def test_status_400_missing_field():
     # Champ obligatoire 'message' manquant
     payload = {
-        "ticket_id": "SAV-422",
+        "ticket_id": "SAV-400",
         "attachments": [],
         "customer": {"id": "C-1", "name": "John"},
         "equipment": {"type": "boiler"},
         "history": {"previous_tickets": 0}
     }
     response = client.post("/tickets/analyze", json=payload)
-    assert response.status_code == HTTP_422_UNPROCESSABLE_CONTENT
-    assert response.json()["error"] == "validation_error"
+    assert response.status_code == HTTP_400_BAD_REQUEST
+    assert response.json()["error"] == "malformed_json"
 
 
 def test_status_422_empty_message():
@@ -62,7 +62,7 @@ def test_status_422_empty_message():
     }
     response = client.post("/tickets/analyze", json=payload)
     assert response.status_code == HTTP_422_UNPROCESSABLE_CONTENT
-    assert response.json()["error"] == "validation_error"
+    assert response.json()["error"] == "inexploitable_ticket"
 
 
 def test_status_500_internal_error():

@@ -13,7 +13,6 @@ client = TestClient(app)
         "expected_cat": "heating",
         "expected_urg": "medium",
         "expected_action": "request_additional_info",
-        "expected_consistent": True
     },
     {
         "id": "T2",
@@ -23,7 +22,6 @@ client = TestClient(app)
         "expected_cat": "plumbing",
         "expected_urg": "high",
         "expected_action": "schedule_intervention",
-        "expected_consistent": True
     },
     {
         "id": "T3",
@@ -33,7 +31,6 @@ client = TestClient(app)
         "expected_cat": "electrical",
         "expected_urg": "medium",
         "expected_action": "schedule_intervention",
-        "expected_consistent": True
     },
     {
         "id": "T4",
@@ -43,7 +40,6 @@ client = TestClient(app)
         "expected_cat": "other",
         "expected_urg": "low",
         "expected_action": "escalate_to_human",
-        "expected_consistent": True
     },
     {
         "id": "T5",
@@ -53,7 +49,6 @@ client = TestClient(app)
         "expected_cat": "heating",
         "expected_urg": "high",
         "expected_action": "schedule_intervention",
-        "expected_consistent": True
     }
 ])
 def test_analyze_ticket_api(tc):
@@ -75,5 +70,4 @@ def test_analyze_ticket_api(tc):
     data = response.json()
     assert data["qualification"]["category"] == tc["expected_cat"]
     assert data["qualification"]["urgency"] == tc["expected_urg"]
-    assert data["qualification"]["is_consistent"] == tc["expected_consistent"]
     assert data["recommendation"]["action"] == tc["expected_action"]

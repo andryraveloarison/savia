@@ -52,7 +52,6 @@ class ValidationOutput(BaseModel):
 class QualificationOutput(BaseModel):
     category: str
     urgency: str
-    is_consistent: bool
 
 
 class CompletenessOutput(BaseModel):

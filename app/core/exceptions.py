@@ -10,17 +10,30 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
     # Log details for easier debugging
     logger.warning("Validation error", extra={"detail": exc.errors()})
     
-    # Si l'erreur est syntaxique (JSON malformé), on renvoie 400
     errors = exc.errors()
-    if any(err.get("type") == "json_invalid" for err in errors):
+    
+    # Types d'erreurs considérés comme "Structurels / Mal formés" -> 400
+    # - missing: champ obligatoire manquant
+    # - json_invalid: JSON syntaxiquement incorrect
+    # - type_error: type invalide (ex: int au lieu de string)
+    structural_error_types = {"missing", "json_invalid"}
+    
+    is_structural = any(
+        err.get("type") in structural_error_types or 
+        (err.get("type") and "type_error" in err.get("type")) 
+        for err in errors
+    )
+
+    if is_structural:
         return JSONResponse(
             status_code=status.HTTP_400_BAD_REQUEST,
-            content={"error": "malformed_json", "detail": "Invalid JSON syntax"},
+            content={"error": "malformed_json", "detail": jsonable_encoder(errors)},
         )
 
+    # Par défaut, si c'est une erreur de "contenu" (ex: message vide, trop court) -> 422
     return JSONResponse(
         status_code=status.HTTP_422_UNPROCESSABLE_CONTENT,
-        content={"error": "validation_error", "detail": jsonable_encoder(errors)},
+        content={"error": "inexploitable_ticket", "detail": jsonable_encoder(errors)},
     )
 
 async def global_exception_handler(request: Request, exc: Exception):

@@ -43,7 +43,6 @@ async def execute(ticket: TicketEntity) -> dict:
         {
             "category": analysis["category"],
             "urgency": analysis["urgency"],
-            "is_consistent": True # Simplification pour l'IA
         },
         completeness,
         {
@@ -65,7 +64,6 @@ async def execute(ticket: TicketEntity) -> dict:
         "qualification": {
             "category": analysis["category"],
             "urgency": analysis["urgency"],
-            "is_consistent": True
         },
         "orientation": {
             "action": analysis["action"],
@@ -102,7 +100,6 @@ async def analyze_ticket(payload: TicketInput) -> TicketAnalysisResponse:
         qualification={
             "category": result_dict["qualification"]["category"].value,
             "urgency": result_dict["qualification"]["urgency"].value,
-            "is_consistent": result_dict["qualification"]["is_consistent"],
         },
         recommendation={
             "action": result_dict["orientation"]["action"].value,
