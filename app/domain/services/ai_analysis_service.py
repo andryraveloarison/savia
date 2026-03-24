@@ -58,5 +58,5 @@ class AIAnalysisService:
             "action": ai_result.action,
             "confidence_score": ai_result.confidence_score,
             "justifications": ai_result.justifications,
-            "provider": f"ai_assisted"
+            "provider": "ai_assisted"
         }

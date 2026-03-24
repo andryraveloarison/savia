@@ -38,6 +38,9 @@ def check_completeness(
     if not equipment_model:
         missing.append("equipment_model")
 
+    if not equipment_type:
+        missing.append("equipment_type")
+
     if not has_exploitable_attachment(attachments):
         missing.append("clear_photo")
 

@@ -1,6 +1,7 @@
 [run]
+relative_files = true
 omit =
-    */tests/*
+    app/tests/*
     */__init__.py
 
 [report]

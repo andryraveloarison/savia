@@ -8,6 +8,8 @@ from starlette.status import (
     HTTP_500_INTERNAL_SERVER_ERROR
 )
 from app.main import app
+from starlette.exceptions import HTTPException as StarletteHTTPException
+
 
 client = TestClient(app, raise_server_exceptions=False)
 
@@ -80,3 +82,24 @@ def test_status_500_internal_error():
         assert response.status_code == HTTP_500_INTERNAL_SERVER_ERROR
         assert response.json()["error"] == "internal_server_error"
         assert "BOOM" not in response.json().get("detail", "")
+
+
+def test_status_http_exception_handler():
+    """Couvre la branche HTTPException dans global_exception_handler (ligne 42)"""
+    from fastapi import HTTPException as FastAPIHTTPException
+    from app.core.exceptions import global_exception_handler
+    from unittest.mock import MagicMock
+
+    mock_request = MagicMock()
+    mock_request.method = "POST"
+    mock_request.url.path = "/tickets/analyze"
+
+    exc = FastAPIHTTPException(status_code=418, detail="I'm a teapot")
+
+    response = global_exception_handler(mock_request, exc)
+
+    assert response.status_code == 418
+    import json
+    body = json.loads(response.body)
+    assert body["error"] == "http_error"
+    assert body["detail"] == "I'm a teapot"

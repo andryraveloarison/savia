@@ -6,7 +6,7 @@ from fastapi.encoders import jsonable_encoder
 
 logger = logging.getLogger("savia")
 
-async def validation_exception_handler(request: Request, exc: RequestValidationError):
+def validation_exception_handler(_request: Request, exc: RequestValidationError):
     # Log details for easier debugging
     logger.warning("Validation error", extra={"detail": exc.errors()})
     
@@ -36,7 +36,7 @@ async def validation_exception_handler(request: Request, exc: RequestValidationE
         content={"error": "inexploitable_ticket", "detail": jsonable_encoder(errors)},
     )
 
-async def global_exception_handler(request: Request, exc: Exception):
+def global_exception_handler(request: Request, exc: Exception):
     # Conserver le comportement par défaut de Starlette pour les HTTPException (comme le 400 malformed JSON)
     if isinstance(exc, HTTPException):
         return JSONResponse(

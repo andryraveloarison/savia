@@ -8,4 +8,4 @@ class AIClient(ABC):
         """
         Analyse un ticket via un LLM.
         """
-        pass
+        ...  # pragma: no cover 

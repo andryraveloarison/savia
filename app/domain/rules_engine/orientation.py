@@ -33,7 +33,7 @@ def decide_action(
 
     # 3. Demande d'infos si incomplet (critique) pour urgence moyenne ou basse
     # Le modèle est considéré critique, la photo est optionnelle pour l'orientation
-    critical_missing = {m for m in missing_elements} - {"clear_photo"}
+    critical_missing = set(missing_elements) - {"clear_photo"}
     if critical_missing:
         return Action.REQUEST_ADDITIONAL_INFO
 

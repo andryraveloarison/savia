@@ -1,3 +1,1 @@
-from typing import TypeAlias
-
-VersionStr: TypeAlias = str
+type VersionStr = str

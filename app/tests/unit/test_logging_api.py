@@ -40,3 +40,20 @@ def test_custom_correlation_id():
     )
     assert response.status_code == 200
     assert response.headers["X-Correlation-ID"] == custom_id
+
+def test_custom_json_formatter_with_levelname():
+    """log_record contient levelname → level = levelname.upper()"""
+    from app.core.logging import CustomJsonFormatter
+    import logging
+    from unittest.mock import patch
+
+    formatter = CustomJsonFormatter()
+    record = logging.LogRecord(
+        name="savia", level=logging.WARNING,
+        pathname="", lineno=0, msg="test", args=(), exc_info=None
+    )
+
+    log_record = {"levelname": "warning"}  # présent mais en minuscule
+    formatter.add_fields(log_record, record, {})
+
+    assert log_record["level"] == "WARNING"

@@ -20,15 +20,15 @@ class CustomJsonFormatter(JsonFormatter):
             log_record["level"] = record.levelname
 
 def setup_logging():
-    logHandler = logging.StreamHandler()
+    log_handler = logging.StreamHandler()
     formatter = CustomJsonFormatter("%(timestamp)s %(level)s %(name)s %(message)s")
-    logHandler.setFormatter(formatter)
+    log_handler.setFormatter(formatter)
 
     # Reset les handlers par défaut pour ne pas avoir de doublons
     root_logger = logging.getLogger()
     for handler in root_logger.handlers[:]:
         root_logger.removeHandler(handler)
-    root_logger.addHandler(logHandler)
+    root_logger.addHandler(log_handler)
     root_logger.setLevel(logging.INFO)
 
 def log_ticket_analysis(payload_ticket_id: str, engine_version: str, action: str, duration_ms: DurationMs):

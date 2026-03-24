@@ -1,3 +1,5 @@
+DEFAULT_CUSTOMER_NAME = "John Doe"
+
 TICKET_ANALYZE_EXAMPLES = {
     "T1_heating": {
         "summary": "T1 - Chauffage",
@@ -6,7 +8,7 @@ TICKET_ANALYZE_EXAMPLES = {
             "ticket_id": "REQ-T1",
             "attachments": [],
             "message": "Chauffage ne démarre plus ce matin",
-            "customer": {"id": "C-123", "name": "John Doe"},
+            "customer": {"id": "C-123", "name": DEFAULT_CUSTOMER_NAME},
             "equipment": {"type": "boiler", "model": None},
             "history": {"previous_tickets": 0}
         },
@@ -18,7 +20,7 @@ TICKET_ANALYZE_EXAMPLES = {
             "ticket_id": "REQ-T2",
             "attachments": [],
             "message": "Fuite d'eau sous l'évier, inondation en cours",
-            "customer": {"id": "C-123", "name": "John Doe"},
+            "customer": {"id": "C-123", "name": DEFAULT_CUSTOMER_NAME},
             "equipment": {"type": "faucet", "model": None},
             "history": {"previous_tickets": 0}
         },
@@ -30,7 +32,7 @@ TICKET_ANALYZE_EXAMPLES = {
             "ticket_id": "REQ-T3",
             "attachments": [],
             "message": "Disjoncteur qui saute régulièrement",
-            "customer": {"id": "C-123", "name": "John Doe"},
+            "customer": {"id": "C-123", "name": DEFAULT_CUSTOMER_NAME},
             "equipment": {"type": "circuit_breaker", "model": "ABB-123"},
             "history": {"previous_tickets": 0}
         },
@@ -42,7 +44,7 @@ TICKET_ANALYZE_EXAMPLES = {
             "ticket_id": "REQ-T4",
             "attachments": [],
             "message": "Problème",
-            "customer": {"id": "C-123", "name": "John Doe"},
+            "customer": {"id": "C-123", "name": DEFAULT_CUSTOMER_NAME},
             "equipment": {"type": "unknown", "model": None},
             "history": {"previous_tickets": 0}
         },
@@ -54,7 +56,7 @@ TICKET_ANALYZE_EXAMPLES = {
             "ticket_id": "REQ-T5",
             "attachments": [],
             "message": "Chaudière gaz en panne, 1er ticket client",
-            "customer": {"id": "C-123", "name": "John Doe"},
+            "customer": {"id": "C-123", "name": DEFAULT_CUSTOMER_NAME},
             "equipment": {"type": "boiler", "model": None},
             "history": {"previous_tickets": 0}
         },

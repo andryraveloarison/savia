@@ -34,15 +34,7 @@ class JustificationService:
         if completeness_status == CompletenessStatus.COMPLETE:
             justifications.append("All required information is present in the ticket")
         else:
-            for elem in missing_elements:
-                if elem == "equipment_model":
-                    justifications.append("Equipment model is missing — cannot identify specific part")
-                elif elem == "clear_photo":
-                    justifications.append("No exploitable photo provided — visual diagnosis impossible")
-                elif elem == "detailed_message":
-                    justifications.append("Message is too short — insufficient problem description")
-                elif elem.startswith("category_mismatch"):
-                    justifications.append(f"Inconsistency detected: {elem.replace(':', ': ').replace(',', ', ')}")
+            justifications.extend(JustificationService._get_missing_info_justifications(missing_elements))
 
         count = ticket.previous_tickets_count
         if count == 0:
@@ -61,5 +53,20 @@ class JustificationService:
                 Action.ESCALATE_TO_HUMAN: "Ambiguous case — human review required",
             }
             justifications.append(action_reasons.get(action, "Decision based on combined criteria"))
-
+        
         return justifications
+
+    @staticmethod
+    def _get_missing_info_justifications(missing_elements: list[str]) -> list[str]:
+        """Helper to get justifications for missing elements."""
+        missing_justifications = []
+        for elem in missing_elements:
+            if elem == "equipment_model":
+                missing_justifications.append("Equipment model is missing — cannot identify specific part")
+            elif elem == "clear_photo":
+                missing_justifications.append("No exploitable photo provided — visual diagnosis impossible")
+            elif elem == "detailed_message":
+                missing_justifications.append("Message is too short — insufficient problem description")
+            elif elem.startswith("category_mismatch"):
+                missing_justifications.append(f"Inconsistency detected: {elem.replace(':', ': ').replace(',', ', ')}")
+        return missing_justifications

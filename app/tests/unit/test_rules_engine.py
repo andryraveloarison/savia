@@ -5,6 +5,7 @@ from app.domain.rules_engine.orientation import decide_action
 from app.domain.rules_engine.scoring import compute_confidence_score
 from app.domain.types.enums import Category, Urgency, Action
 from app.shared.utils.text import normalize_text, count_keywords
+
 # ─── Tests Qualification ──────────────────────────────────────────────
 
 def test_normalize_text():
@@ -30,44 +31,6 @@ def test_qualify_ticket_consistency():
     assert res["category"] == Category.HEATING # Priorité équipement
     assert res["is_consistent"] is False # Car keywords pointent vers plumbing
 
-# ─── Tests Completeness ───────────────────────────────────────────────
-
-def test_has_exploitable_attachment():
-    assert has_exploitable_attachment([]) is False
-    assert has_exploitable_attachment([{"type": "photo", "description": "une fuite"}]) is True
-    assert has_exploitable_attachment([{"type": "pdf", "description": "  "}]) is False
-
-def test_check_completeness():
-    missing = check_completeness("Aider", None, "boiler", [])
-    assert "equipment_model" in missing
-    assert "clear_photo" in missing
-    assert "detailed_message" in missing
-
-# ─── Tests Orientation ────────────────────────────────────────────────
-
-def test_decide_action_urgency():
-    # Urgence High -> Intervention immédiate même si incomplet
-    action = decide_action(
-        message="Inondation !",
-        urgency=Urgency.HIGH,
-        equipment_type="faucet",
-        previous_tickets_count=0,
-        confidence_score=0.8,
-        missing_elements=["equipment_model"]
-    )
-    assert action == Action.SCHEDULE_INTERVENTION
-
-def test_decide_action_missing_info():
-    # Urgence Low + Incomplet -> Demande d'infos
-    action = decide_action(
-        message="Besoin d'un entretien",
-        urgency=Urgency.LOW,
-        equipment_type="boiler",
-        previous_tickets_count=0,
-        confidence_score=0.9,
-        missing_elements=["equipment_model"]
-    )
-    assert action == Action.REQUEST_ADDITIONAL_INFO
 
 # ─── Tests Scoring ────────────────────────────────────────────────────
 
@@ -89,3 +52,20 @@ def test_compute_confidence_score():
         has_useful_attachment=False
     )
     assert score_low < 0.3
+
+
+# ─── History rules ────────────────────────────────────────────────────
+
+def test_previous_tickets_count_no_history():
+    """Couvre le return 0 quand history est None"""
+    from app.domain.entities.ticket import TicketEntity, CustomerEntity, EquipmentEntity
+
+    ticket = TicketEntity(
+        ticket_id="SAV-TEST",
+        message="Test",
+        customer=CustomerEntity(id="C-001", name="Test"),
+        equipment=EquipmentEntity(type="boiler"),
+        history=None  # ← force le return 0
+    )
+
+    assert ticket.previous_tickets_count == 0

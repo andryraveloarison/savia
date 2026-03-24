@@ -2,6 +2,41 @@
 
 All notable changes to the Savia project will be documented in this file.
 
+## [1.3.0] - 2026-03-24
+
+### Added
+- **Makefile**: Unified command interface for all operations (run, test, sonar, etc.) - works on Linux, macOS, and Windows.
+- **.env.example**: Configuration template with well-documented variables and setup instructions.
+- **Enhanced Architecture Documentation**: Clarified Clean Architecture layers with clear separation between Domain, Application, Infrastructure, Core, and Shared layers.
+- **SonarCloud Integration**: Added `make sonar` and `make sonar-token` commands for code quality analysis (optional feature).
+
+### Changed
+- **README Restructure**: 
+  - Merged Project Structure and Architecture sections for clarity
+  - Simplified setup instructions with initial setup steps
+  - Marked SonarCloud as optional
+  - Consolidated troubleshooting into a concise table format
+  - Reduced README size by ~30% while improving clarity
+- **Environment Configuration**: Improved .env file loading in Makefile to properly export variables.
+- **Help Command**: Enhanced `make help` to display all available commands with descriptions.
+
+### Removed
+- **Deprecated Scripts**: Removed `run_app.sh`, `run_tests.sh`, `run_sonar.sh` and their Windows equivalents (`*.bat`, `*.ps1`) - all functionality now integrated into Makefile.
+- **Redundant Code**: Eliminated script duplication across operating systems.
+
+### Fixed
+- **SONAR_TOKEN Loading**: Fixed .env variable export in Makefile so tokens are properly loaded on all platforms.
+- **Cross-Platform Compatibility**: All commands now work identically on Windows, macOS, and Linux.
+
+## [1.2.0] - 2026-03-24
+
+### Added
+- **Extended Test Suite**: Added targeted unit tests to cover previously untested branches across `AIAdapter`, `AIAnalysisService`, `JustificationService`, `OrientationService`, `CompletenessService`, `TicketEntity`, and `CustomJsonFormatter`.
+
+### Fixed
+- **SonarCloud Coverage Alignment**: Fixed coverage report path mismatch between Docker test container and SonarCloud by enabling `relative_files = true` in `.coveragerc`.
+- **Coverage Scope**: Excluded test files from coverage measurement to align local and SonarCloud metrics.
+
 ## [1.1.0] - 2026-03-23
 
 ### Added
