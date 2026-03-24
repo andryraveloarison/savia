@@ -4,6 +4,9 @@ FROM python:3.12-slim
 LABEL maintainer="Dataven Technologies"
 LABEL description="Savia — Moteur d'aide à la décision SAV"
 
+# Créer un utilisateur non-root
+RUN useradd --create-home --shell /bin/bash saviauser
+
 # Répertoire de travail
 WORKDIR /savia
 
@@ -22,6 +25,9 @@ COPY .env.example .env
 ENV PYTHONDONTWRITEBYTECODE=1 \
     PYTHONUNBUFFERED=1 \
     PYTHONPATH=/savia
+
+# Changer l'utilisateur courant pour éviter d’exécuter en root
+USER saviauser
 
 # Port exposé
 EXPOSE 8000
