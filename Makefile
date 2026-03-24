@@ -22,7 +22,7 @@ help: ## Display this help message
 # ─── Application Management ──────────────────────────────────────────
 run: ## Start the application (docker compose up --build)
 	@echo "🏗️  Building and starting Savia..."
-	docker compose up --build -d
+	docker compose up -d
 	@echo ""
 	@echo "✅ Savia is ready!"
 	@echo "📍 API       : http://localhost:8000"
