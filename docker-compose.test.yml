@@ -9,6 +9,7 @@ services:
     volumes:
       - ./app:/savia/app
       - ./coverage:/savia/coverage
+      - ./coverage.xml:/savia/coverage.xml
       - ./.env:/savia/.env
     environment:
       - DEBUG=true
@@ -18,13 +19,13 @@ services:
       - savia-network
 
   allure:
-    image: "frankescobar/allure-docker-service:latest"
+    image: frankescobar/allure-docker-service:latest
     container_name: allure-report
     ports:
       - "5050:5050"
     volumes:
       - ./coverage/allure-results:/app/allure-results
-    command: "allure serve /app/allure-results --port 5050 --host 0.0.0.0"
+    command: allure serve /app/allure-results --port 5050 --host 0.0.0.0
     networks:
       - savia-network
 
