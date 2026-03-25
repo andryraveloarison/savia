@@ -24,16 +24,19 @@ cp .env.example .env
 # SONAR_TOKEN=your_token_here  (get from https://sonarcloud.io/account/security/)
 
 # 1. Verify Docker is running
-# 2. Start the application
-make run
-# Or without Make: docker compose up --build
+# 2. Start the application (first time - with build)
+make start
+# Or without Make: docker compose up --build -d
 ```
 
-## 🚀 Running the Application
+## Running the Application
 
 ### Using Makefile (Recommended - All Platforms)
 ```bash
-# Start application
+# First time setup - Build and start
+make start
+
+# Subsequent runs - Just start (no rebuild)
 make run
 
 # View logs
@@ -60,7 +63,7 @@ docker compose logs -f savia-api
 
 The API will be available at `http://localhost:8000`.
 
-## 🧪 Running Tests
+## Running Tests
 
 ### Using Makefile (Recommended)
 ```bash
@@ -86,7 +89,7 @@ docker compose -f docker-compose.test.yml up -d allure
 
 **Test results** can be viewed at `http://localhost:5050` (Allure Report).
 
-## 🔍 Code Quality Analysis (SonarCloud) — Optional
+## Code Quality Analysis (SonarCloud) — Optional
 
 If you want code quality analysis, setup SonarCloud:
 
@@ -101,7 +104,7 @@ make sonar
 
 **Results**: [SonarCloud - Savia Project](https://sonarcloud.io/project/overview?id=andryraveloarison_savia)
 
-## 📚 API Documentation
+## API Documentation
 Once the app is running, you can access the interactive documentation at:
 - **Scalar API Ref**: [http://localhost:8000/docs](http://localhost:8000/docs)
 - **Health Check**: [http://localhost:8000/health](http://localhost:8000/health)
@@ -134,7 +137,7 @@ SONAR_TOKEN=                       # Get from https://sonarcloud.io/account/secu
 
 **No .env file needed?** Just run `make run` — everything works with defaults!
 
-## 📁 Project Structure & Architecture
+## Project Structure & Architecture
 
 ```
 app/
@@ -144,21 +147,21 @@ app/
 │   ├── middleware.py    # HTTP middleware
 │   └── exceptions.py    # Global exception handlers
 │
-├── domain/              # 🎯 Business Core (Pure Logic)
+├── domain/              # Business Core (Pure Logic)
 │   ├── entities/        # Domain models
 │   ├── services/        # Business logic
 │   ├── rules_engine/    # Decision rules
 │   └── types/           # Domain types
 │
-├── application/         # 📋 Use Cases
+├── application/         # Use Cases
 │   └── use_cases/       # Business workflows
 │
-├── infrastructure/      # 🔌 External Adapters
+├── infrastructure/      # External Adapters
 │   ├── api/             # HTTP routes
 │   ├── schemas/         # Request/response validation
 │   └── ai/              # AI integrations
 │
-└── shared/              # 🛠️ Common Utilities
+└── shared/              # Common Utilities
     ├── constants/       # Global constants
     ├── types/           # Shared types
     └── utils/           # Helper functions
@@ -189,7 +192,7 @@ Infrastructure (API) → Application (Use Cases) → Domain (Business Rules)
 
 **Key**: Domain layer has zero knowledge of API, databases, or frameworks.
 
-## 💻 Development
+## Development
 
 ### Local Setup (without Docker)
 ```bash
@@ -231,7 +234,7 @@ docker compose -f docker-compose.test.yml up -d allure
 docker compose down
 ```
 
-## 🛑 Stopping Services
+## Stopping Services
 
 ```bash
 make stop               # Stop all
@@ -250,10 +253,10 @@ make test-stop          # Stop tests only
 | **SONAR_TOKEN not found** | Add to `.env`: `SONAR_TOKEN=your_token_here` (get from https://sonarcloud.io/account/security/) or skip `make sonar` |
 | **No `.env` file** | Not needed! App uses defaults. Only required for SonarCloud or custom settings. |
 
-## 📊 Test Coverage
+## Test Coverage
 After running tests, coverage report is available at:
 - `coverage/coverage.xml` - XML report
 - Allure HTML report at `http://localhost:5050`
 
-## 🔐 License
+## License
 Internal MVP - Proprietary

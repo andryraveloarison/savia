@@ -6,6 +6,21 @@ from fastapi.encoders import jsonable_encoder
 
 logger = logging.getLogger("savia")
 
+
+# ─── Custom Exceptions ───────────────────────────────────────────────────────
+
+class ValidationError(Exception):
+    """Exception levée lors de la validation d'une entité."""
+    pass
+
+
+class ConstraintViolationError(ValidationError):
+    """Exception levée quand une contrainte (garde-fou) est violée."""
+    pass
+
+
+# ─── Exception Handlers ──────────────────────────────────────────────────────
+
 def validation_exception_handler(_request: Request, exc: RequestValidationError):
     # Log details for easier debugging
     logger.warning("Validation error", extra={"detail": exc.errors()})

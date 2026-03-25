@@ -1,4 +1,4 @@
-.PHONY: help run up stop down restart logs test test-stop test-logs allure-logs sonar sonar-token build install clean clean-all dev ps status info version docker-clean
+.PHONY: help start run up stop down restart logs test test-stop test-logs allure-logs sonar sonar-token build install clean clean-all dev ps status info version docker-clean
 
 # ─── Configuration ───────────────────────────────────────────────────
 .DEFAULT_GOAL := help
@@ -20,8 +20,19 @@ help: ## Display this help message
 
 
 # ─── Application Management ──────────────────────────────────────────
-run: ## Start the application (docker compose up --build)
-	@echo "🏗️  Building and starting Savia..."
+start: ## Initial setup - Build and start the application (docker compose up --build)
+	@echo "🏗️  Building and starting Savia for the first time..."
+	docker compose up --build -d
+	@echo ""
+	@echo "✅ Savia is ready!"
+	@echo "📍 API       : http://localhost:8000"
+	@echo "📍 Docs      : http://localhost:8000/docs"
+	@echo "📍 Health    : http://localhost:8000/health"
+	@echo ""
+	@echo "View logs with: make logs"
+
+run: ## Start the application (without rebuilding - use 'make start' for first run)
+	@echo "🚀 Starting Savia..."
 	docker compose up -d
 	@echo ""
 	@echo "✅ Savia is ready!"

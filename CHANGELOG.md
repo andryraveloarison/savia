@@ -2,6 +2,26 @@
 
 All notable changes to the Savia project will be documented in this file.
 
+## [1.4.0] - 2026-03-25
+
+### Added
+- **Rate Limiting**: Protection against abuse by limiting the number of requests per client.
+- **Payload Size Limit**: Maximum request body size to prevent large payload attacks and memory issues.
+- **AI Timeout Handling**: Timeout added to AI calls to prevent blocking requests when the AI service is slow or unavailable.
+- **Constraints Service**: Centralized validation for request constraints (payload size, attachments count, etc.).
+- **Constraints Constants**: Added shared constants for system limits and validation rules.
+- **Unit Tests**: Added tests for ConstraintsService to ensure validation logic reliability.
+
+### Changed
+- **Analyze Ticket Use Case**: Integrated constraints validation and timeout handling into the analysis workflow.
+- **Exception Handling**: Improved custom exceptions for constraint violations and timeout errors.
+
+### Security
+- Added protections against DoS via large payloads.
+- Prevented long blocking calls to external AI services.
+- Improved API robustness and input validation.
+
+
 ## [1.3.0] - 2026-03-24
 
 ### Added

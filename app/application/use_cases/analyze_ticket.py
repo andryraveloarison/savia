@@ -1,4 +1,5 @@
 import time
+import asyncio
 from app.core.config import get_settings
 from app.core.logging import log_ticket_analysis
 from app.shared.types.common import DurationMs
@@ -13,6 +14,7 @@ from app.domain.services.orientation_service import OrientationService
 from app.domain.services.justification_service import JustificationService
 from app.domain.services.audit_service import AuditService
 from app.domain.services.ai_analysis_service import AIAnalysisService
+from app.domain.services.constraints_service import ConstraintsService
 
 from app.infrastructure.ai.adapter import AIAdapter
 from app.infrastructure.schemas.ticket_schema import TicketInput, TicketAnalysisResponse
@@ -24,8 +26,11 @@ def get_ai_client():
 
 async def execute(ticket: TicketEntity) -> dict:
     """
-    Pipeline d'analyse : validation → complétude → [IA ou Règles] → justification → audit.
+    Pipeline d'analyse : contraintes → validation → complétude → [IA ou Règles] → justification → audit.
     """
+    # 0. Vérification des garde-fous
+    ConstraintsService.validate_all_constraints(ticket)
+    
     # 1. Validation
     validation = ValidationService.run(ticket)
 
@@ -34,7 +39,11 @@ async def execute(ticket: TicketEntity) -> dict:
 
     # 3 & 4. Qualification & Orientation (via AI ou Rules avec AIAnalysisService)
     ai_client = get_ai_client()
-    analysis = await AIAnalysisService.run(ticket, ai_client, completeness)
+    timeout_seconds = ConstraintsService.get_timeout_seconds()
+    analysis = await asyncio.wait_for(
+        AIAnalysisService.run(ticket, ai_client, completeness),
+        timeout=timeout_seconds
+    )
 
     # 5. Justification
     # Note: On adapte justification pour prendre les infos de l'analyse (IA ou Rules)
