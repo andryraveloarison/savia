@@ -1,5 +1,5 @@
 import pytest
-from app.domain.rules_engine.completeness import check_completeness, has_exploitable_attachment
+from app.domain.rules.completeness import check_completeness, has_exploitable_attachment
 
 # ─── Tests has_exploitable_attachment ────────────────────────────────────────────────
 def test_has_exploitable_attachment_empty():

@@ -1,5 +1,5 @@
 import pytest
-from app.domain.rules_engine.validation import validate_ticket_data
+from app.domain.rules.validation import validate_ticket_data
 
 def test_validate_ticket_data_success():
     errors = validate_ticket_data("SAV-001", "Mon chauffage est en panne", "C-123")

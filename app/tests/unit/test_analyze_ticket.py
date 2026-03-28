@@ -64,7 +64,7 @@ async def test_analyze_ticket(tc):
         history={"previous_tickets": 0}
     )
 
-    # ⚡ Attacher le payload envoyé à Allure
+    # Attacher le payload envoyé à Allure
     allure.attach(
         payload.model_dump_json(indent=2),
         name="Payload envoyé",

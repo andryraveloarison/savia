@@ -1,5 +1,5 @@
 from app.domain.entities.ticket import TicketEntity
-from app.domain.rules_engine.validation import validate_ticket_data
+from app.domain.rules.validation import validate_ticket_data
 
 
 class ValidationService:

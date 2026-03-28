@@ -1,5 +1,5 @@
 from app.domain.entities.ticket import TicketEntity
-from app.domain.rules_engine.qualification import qualify_ticket
+from app.domain.rules.qualification import qualify_ticket
 
 
 class QualificationService:

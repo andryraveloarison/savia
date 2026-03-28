@@ -7,3 +7,11 @@ scalar-fastapi>=1.0.0
 pytest-cov
 python-json-logger
 httpx
+python-multipart
+langchain
+langchain-community
+faiss-cpu
+pypdf
+langchain-text-splitters
+langchain-huggingface
+fastembed

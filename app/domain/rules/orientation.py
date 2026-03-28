@@ -22,6 +22,8 @@ def decide_action(
     """
     Sélectionne l'action recommandée pour le ticket.
     """
+
+
     # 1. Alerte de confiance (besoin d'un humain quoi qu'il arrive)
     if confidence_score < settings.confidence_threshold_escalate:
         return Action.ESCALATE_TO_HUMAN

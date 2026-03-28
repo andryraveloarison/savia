@@ -23,6 +23,11 @@ class EquipmentEntity:
     type: str
     model: Optional[str] = None
 
+@dataclass
+class ProductReferenceEntity:
+    type: str
+    model: Optional[str] = None
+
 
 @dataclass
 class HistoryEntity:
@@ -37,7 +42,8 @@ class TicketEntity:
     equipment: EquipmentEntity
     attachments: list[AttachmentEntity] = field(default_factory=list)
     history: Optional[HistoryEntity] = None
-
+    product_reference: Optional[str] = None
+    
     @property
     def previous_tickets_count(self) -> int:
         if self.history is None:

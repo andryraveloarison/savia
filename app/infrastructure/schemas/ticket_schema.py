@@ -1,11 +1,8 @@
-"""
-Schemas Pydantic — validation stricte des entrées/sorties de l'API.
-"""
+# app/infrastructure/schemas/ticket_schema.py
+
 from typing import Optional, List
 from pydantic import BaseModel, Field, field_validator
 
-
-# ─── Input Schemas ────────────────────────────────────────────────────
 
 class AttachmentInput(BaseModel):
     type: str = Field(..., min_length=1)
@@ -26,28 +23,33 @@ class HistoryInput(BaseModel):
     previous_tickets: int = Field(..., ge=0)
 
 
+# 🔥 NEW
+class ImageInput(BaseModel):
+    filename: str
+    content_base64: str
+    description: Optional[str] = None
+
+
 class TicketInput(BaseModel):
-    ticket_id: str = Field(..., min_length=1, examples=["SAV-001"])
-    message: str = Field(..., min_length=1, examples=["Mon chauffage ne démarre plus."])
-    attachments: List[AttachmentInput] = Field(..., examples=[[]])
+    ticket_id: str
+    message: str
+    attachments: List[AttachmentInput]
     customer: CustomerInput
     equipment: EquipmentInput
     history: HistoryInput
 
+    # 🔥 image support
+    image: Optional[ImageInput] = None
+
     @field_validator("message")
     @classmethod
-    def message_not_blank(cls, v: str) -> str:
+    def message_not_blank(cls, v: str):
         if not v.strip():
             raise ValueError("message must not be blank")
         return v
 
 
-# ─── Output Schemas ───────────────────────────────────────────────────
-
-class ValidationOutput(BaseModel):
-    is_valid: bool
-    errors: List[str]
-
+# ─── OUTPUT ─────────────────
 
 class QualificationOutput(BaseModel):
     category: str

@@ -1,5 +1,5 @@
 import pytest
-from app.domain.rules_engine.orientation import decide_action
+from app.domain.rules.orientation import decide_action
 from app.domain.types.enums import Action, Urgency
 from unittest.mock import patch
 
@@ -38,7 +38,7 @@ def test_decide_action_auto_resolution():
 
 def test_decide_action_escalate_low_confidence():
     """Score de confiance trop bas → ESCALATE_TO_HUMAN"""
-    with patch("app.domain.rules_engine.orientation.settings") as mock_settings:
+    with patch("app.domain.rules.orientation.settings") as mock_settings:
         mock_settings.confidence_threshold_escalate = 0.99
 
         action = decide_action(

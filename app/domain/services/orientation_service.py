@@ -1,6 +1,6 @@
 from app.domain.entities.ticket import TicketEntity
-from app.domain.rules_engine.scoring import compute_confidence_score
-from app.domain.rules_engine.orientation import decide_action
+from app.domain.rules.scoring import compute_confidence_score
+from app.domain.rules.orientation import decide_action
 
 
 class OrientationService:
@@ -16,7 +16,7 @@ class OrientationService:
             {"type": a.type, "description": a.description} 
             for a in ticket.attachments
         ]
-        from app.domain.rules_engine.completeness import has_exploitable_attachment
+        from app.domain.rules.completeness import has_exploitable_attachment
         has_attachment = has_exploitable_attachment(attachments_raw)
 
         confidence = compute_confidence_score(

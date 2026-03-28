@@ -12,15 +12,28 @@ from app.core.middleware import add_correlation_id
 from app.core.exceptions import validation_exception_handler, global_exception_handler
 from app.infrastructure.api.routes import router
 
+from app.infrastructure.ai.documentation_adapter import DocumentationAdapter
+
 # ─── Configuration ───────────────────────────────────────────────────
 
 setup_logging()
 logger = logging.getLogger("savia")
 settings = get_settings()
 
+# Variable globale pour l'app
+doc_adapter: DocumentationAdapter | None = None
+
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(f"🚀 {settings.app_name} v{settings.app_version} starting...")
+        
+    # 🔹 Initialiser DocumentationAdapter une seule fois
+    global doc_adapter
+    doc_adapter = DocumentationAdapter(
+        docs_path="app/infrastructure/ai/docs",
+        index_path="app/infrastructure/ai/faiss_index"
+    )
+
     yield
     logger.info("👋 Savia shutting down.")
 
