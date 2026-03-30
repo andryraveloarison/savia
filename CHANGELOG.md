@@ -2,6 +2,25 @@
 
 All notable changes to the Savia project will be documented in this file.
 
+## [1.5.0] - 2026-03-30
+
+### Added
+- **RAG Semantic Search**: Updated DocumentationAdapter to use user message for similarity search, significantly improving retrieval for specific error codes.
+- **Strict Anti-Hallucination**: Added few-shot examples and strict constraints to DocumentationAIAdapter to prevent technical "guesses" for unknown issues.
+- **Forced Escalation Logic**: Added safety override in `analyze_ticket` to force human escalation when documentation confidence is low (threshold configurable).
+- **Configurable AI Timeout**: Added `ai_timeout` (default 120s) to handle long-running LLM requests.
+- **Configurable Escalation Threshold**: Added `confidence_threshold_escalate` to settings for fine-tuning RAG overrides.
+
+### Changed
+- **BaseAIClient**: Now uses structured `httpx.Timeout` for better reliability (fixes `WriteTimeout` on large uploads).
+- **VisionAdapter**: Inherits improved timeout and reliability for image-based product recognition.
+- **DocumentationAI Prompt**: Aligned JSON structure with backend parsing logic and added specialized technical instructions.
+
+### Fixed
+- **ReadTimeout Error**: Resolved network timeouts during complex AI analysis.
+- **Logic Over-Escalation**: Vague queries (e.g., "radiateur ne marche plus") now correctly ask for more info instead of being forced to human escalation.
+- **Git Hygiene**: Added `models_cache` and `faiss_index` to `.gitignore` and removed them from tracking.
+
 ## [1.4.0] - 2026-03-25
 
 ### Added

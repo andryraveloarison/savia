@@ -1,32 +1,30 @@
 from datetime import datetime
 from dataclasses import replace
-
 from app.infrastructure.ai.vision_adapter import VisionAdapter
 from app.infrastructure.ai.analysis_adapter import AIAdapter
 from app.infrastructure.ai.documentation_adapter import DocumentationAdapter
 from app.infrastructure.ai.documentation_ai_adapter import DocumentationAIAdapter
-
 from app.domain.entities.ticket import TicketEntity
-
-
 from app.infrastructure.ai.registry import ai_registry
 from app.domain.entities.ticket import TicketEntity
+from app.core.config import get_settings
 
 
 async def analyze_ticket(payload):
+    settings = get_settings()
 
     product_reference = payload.equipment.model
     documentation_message = None
     doc_ai_result = None
 
-    # STEP 1: Vision → détecter référence produit (si pas fournie)
+    # Vision → détecter référence produit (si pas fournie)
     if not product_reference and payload.image:
         vision_result = await ai_registry.vision.detect_product_reference(
             payload.image.content_base64
         )
         product_reference = vision_result.get("product_reference")
 
-    # STEP 2: Recherche documentation (FAISS)
+    # Recherche documentation (FAISS)
     doc_chunks = []
     if product_reference and payload.equipment.type:
         doc_chunks = ai_registry.documentation.query(
@@ -36,7 +34,7 @@ async def analyze_ticket(payload):
             top_k=5
         )
 
-    # STEP 3: Génération aide technique avec LLM + documentation
+    # Génération aide technique avec LLM + documentation
     if doc_chunks:
         doc_ai_result = await ai_registry.documentation_ai.analyze_documentation(
             payload.equipment.type,
@@ -46,7 +44,7 @@ async def analyze_ticket(payload):
         )
         documentation_message = doc_ai_result.get("diagnostic_help")
 
-    # STEP 4: Build Ticket Entity
+    # Build Ticket Entity
     ticket = TicketEntity(
         ticket_id=payload.ticket_id,
         message=payload.message,
@@ -58,15 +56,15 @@ async def analyze_ticket(payload):
         problem_type=payload.problem_type,
     )
 
-    # STEP 6: AI analysis ticket
+    # AI analysis ticket
     result = await ai_registry.ai.analyze_ticket(ticket, has_documentation=bool(doc_chunks))
 
-    # STEP 7: Message IA final utilisateur
+    # Message IA final utilisateur
     # 🔹 Priorité à la documentation si disponible et pertinente
     message_ia = None
     
-    # Si on a un résultat doc avec une confiance décente (> 0.7) et des actions concrètes
-    if doc_ai_result and doc_ai_result.get("confidence_score", 0) >= 0.7 and doc_ai_result.get("recommended_actions"):
+    # Si on a un résultat doc avec une confiance décente (>= threshold) et des actions concrètes
+    if doc_ai_result and doc_ai_result.get("confidence_score", 0) >= settings.confidence_threshold_escalate and doc_ai_result.get("recommended_actions"):
         # On override l'action si c'était plus restrictif
         if result.action in ["request_additional_info", "escalate_to_human"]:
              result = replace(
@@ -98,10 +96,11 @@ async def analyze_ticket(payload):
         # et que l'expert classification pensait avoir trouvé une solution ou voulait escalader,
         # on doit forcer l'escalade car le classifier ne peut pas "deviner" la solution si la doc ne l'a pas.
         # MAIS : on ne doit pas écraser une demande d'info (vague) ou une intervention déjà décidée.
-        if doc_chunks and (not doc_ai_result or doc_ai_result.get("confidence_score", 0) < 0.7):
+        if doc_chunks and (not doc_ai_result or doc_ai_result.get("confidence_score", 0) < settings.confidence_threshold_escalate):
             if result.action not in ["request_additional_info", "schedule_intervention"]:
                 result = replace(
                     result,
+                    confidence_score=doc_ai_result["confidence_score"],
                     action="escalate_to_human",
                     justifications=["Problème non résolu via documentation (confiance basse ou inexistant)."]
                 )

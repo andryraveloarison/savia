@@ -124,15 +124,13 @@ DEBUG=false                        # Enable debug logs
 ENGINE_VERSION=savia-mvp-v1        # Engine identifier
 
 # Confidence Thresholds (optional)
-CONFIDENCE_THRESHOLD_ESCALATE=0.40 # Below: require human review (0-1)
-CONFIDENCE_THRESHOLD_AI=0.90       # Above: fully trust AI (0-1)
+CONFIDENCE_THRESHOLD_ESCALATE=0.70 # Below: force human escalation for tech issues (0-1)
+CONFIDENCE_THRESHOLD_AI=0.50       # Above: fully trust AI (0-1)
 
 # AI Features (optional)
 AI_ENABLED=true                    # Enable/disable AI analysis
-AI_PROVIDER=openai                 # AI provider: openai or mock
-
-# SonarCloud (optional, only for code quality analysis)
-SONAR_TOKEN=                       # Get from https://sonarcloud.io/account/security/
+AI_TIMEOUT=120.0                   # Timeout in seconds for AI requests
+OLLAMA_MODEL=gemini-3-flash-preview # Model identifier
 ```
 
 **No .env file needed?** Just run `make run` — everything works with defaults!

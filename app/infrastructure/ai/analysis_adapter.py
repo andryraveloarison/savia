@@ -14,10 +14,11 @@ Analyse le ticket, le type de problème et la référence produit.
 Règles de décision :
 1. Si l'utilisateur n'a pas mis assez d'informations pour diagnostiquer (ex: message trop court, manque de détails sur la panne) :
    - action : "request_additional_info"
+   - confidence_score : très élevé (typiquement entre 0.90 et 1.0) car tu es certain du manque d'informations. Ajuste selon ton degré de certitude.
    - message_ia : Demande précisément ce qui manque (ex: "Veuillez prendre une photo de la plaque signalétique sur votre appareil").
 2. Si les informations sont complètes mais qu'AUCUN document n'a été trouvé pour cette référence :
    - action : "escalate_to_human"
-   - confidence_score : bas (entre 0.1 et 0.3)
+   - confidence_score : bas (entre 0.1 et 0.4) si tu es sûr qu'aucune documentation n'est disponible.
    - justifications : Préciser qu'aucune documentation n'est disponible.
 3. Si le problème nécessite obligatoirement une intervention physique (ex: fuite d'eau importante, odeur de gaz, court-circuit) :
    - action : "schedule_intervention"
@@ -38,7 +39,7 @@ CONSIGNES IMPORTANTES POUR "message_ia" :
   "category": "<heating|plumbing|electrical|ventilation|other>",
   "urgency": "<critical|high|medium|low>",
   "action": "<auto_resolution|request_additional_info|schedule_intervention|generate_quote|escalate_to_human>",
-  "confidence_score": <float>,
+  "confidence_score": <float entre 0.0 et 1.0>,
   "justifications": ["..."],
   "message_ia": "<message de communication uniquement, pas de technique>"
 }

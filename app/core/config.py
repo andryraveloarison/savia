@@ -11,7 +11,7 @@ class Settings(BaseSettings):
     app_version: VersionStr = "1.4.0"
     debug: bool = False
     engine_version: VersionStr = "savia-mvp-v1"
-    confidence_threshold_escalate: float = 0.40
+    confidence_threshold_escalate: float = 0.7
     confidence_threshold_ai: float = 0.5
     
     ai_enabled: bool = True

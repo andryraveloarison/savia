@@ -26,6 +26,10 @@ allure-report/
 *.swp
 *.swo
 
+# AI
+app/infrastructure/ai/models_cache/
+app/infrastructure/ai/faiss_index/
+
 # OS
 .DS_Store
 Thumbs.db

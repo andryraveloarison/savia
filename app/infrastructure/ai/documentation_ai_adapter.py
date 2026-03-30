@@ -32,7 +32,7 @@ Response:
   "diagnostic_help": "Le code E02 indique une surchauffe de l'appareil.",
   "recommended_actions": ["Éteindre l'appareil", "Le laisser refroidir 30 minutes", "Redémarrer"],
   "important_warnings": ["Ne pas couvrir l'appareil"],
-  "confidence_score": 0.95
+  "confidence_score": <float entre 0.0 et 1.0 selon la pertinence de la réponse trouvée>
 }
 
 **Exemple 2 (Problème NON trouvé) :**
@@ -44,7 +44,7 @@ Response:
   "diagnostic_help": "Le code erreur E999 n'est pas répertorié dans la documentation technique.",
   "recommended_actions": [],
   "important_warnings": [],
-  "confidence_score": 0.1
+  "confidence_score": <float proche de 0.0 car non trouvé>
 }
 
 Réponds uniquement en JSON.
