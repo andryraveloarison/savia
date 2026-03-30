@@ -3,6 +3,7 @@ from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
 from fastapi.exceptions import RequestValidationError
+from fastapi.middleware.cors import CORSMiddleware
 from scalar_fastapi import get_scalar_api_reference
 
 from app.core.config import get_settings
@@ -12,7 +13,7 @@ from app.core.middleware import add_correlation_id
 from app.core.exceptions import validation_exception_handler, global_exception_handler
 from app.infrastructure.api.routes import router
 
-from app.infrastructure.ai.documentation_adapter import DocumentationAdapter
+from app.infrastructure.ai.registry import ai_registry
 
 # ─── Configuration ───────────────────────────────────────────────────
 
@@ -20,19 +21,14 @@ setup_logging()
 logger = logging.getLogger("savia")
 settings = get_settings()
 
-# Variable globale pour l'app
-doc_adapter: DocumentationAdapter | None = None
-
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     logger.info(f"🚀 {settings.app_name} v{settings.app_version} starting...")
         
-    # 🔹 Initialiser DocumentationAdapter une seule fois
-    global doc_adapter
-    doc_adapter = DocumentationAdapter(
-        docs_path="app/infrastructure/ai/docs",
-        index_path="app/infrastructure/ai/faiss_index"
-    )
+    # 🔹 Pré-charger les adaptateurs via le registre (Singleton)
+    # Cela déclenche le chargement des modèles et des indexes
+    _ = ai_registry.documentation
+    logger.info("✅ Registre IA prêt (modèles et documentation chargés)")
 
     yield
     logger.info("👋 Savia shutting down.")
@@ -49,6 +45,14 @@ app = FastAPI(
 # ─── Middleware ──────────────────────────────────────────────────────
 
 app.middleware("http")(add_correlation_id)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # ─── Routes ──────────────────────────────────────────────────────────
 

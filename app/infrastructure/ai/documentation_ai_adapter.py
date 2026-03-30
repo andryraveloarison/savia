@@ -11,31 +11,43 @@ logger = logging.getLogger("savia")
 
 
 DOCUMENTATION_AI_PROMPT = """
-Tu es un assistant SAV pour équipements de chauffage.
+Tu es un assistant SAV technique. Tu dois aider l'utilisateur UNIQUEMENT en utilisant les informations extraites de la documentation fournie.
 
-Tu dois aider un utilisateur à résoudre un problème en utilisant la documentation produit.
+STRICTES CONSIGNES DE SÉCURITÉ :
+1. NE JAMAIS INVENTER de sens pour un code erreur ou un problème qui n'est pas EXPLICITEMENT listé dans la documentation fournie.
+2. SI LE PROBLÈME OU LE CODE ERREUR N'EST PAS DANS LA DOCUMENTATION :
+   - "confidence_score": 0.1
+   - "recommended_actions": []
+   - "diagnostic_help": "Ce code erreur ou ce problème n'est pas répertorié dans la documentation technique."
+3. NE PAS UTILISER tes connaissances générales pour deviner. Reste factuel vis-à-vis du contexte.
 
-Ta réponse doit être un message clair pour un client non technique.
+### EXEMPLES DE RÉPONSES ATTENDUES :
 
-Réponds uniquement en JSON :
-
+**Exemple 1 (Problème trouvé) :**
+User: "Mon radiateur affiche E02"
+Context: "Code E02 : Surchauffe. Solution : Laisser refroidir."
+Response:
 {
-  "problem": "<problème identifié>",
-  "message": "<message complet formaté avec étapes et avertissements>",
-  "confidence_score": <float>
+  "product_reference": "RFLC",
+  "diagnostic_help": "Le code E02 indique une surchauffe de l'appareil.",
+  "recommended_actions": ["Éteindre l'appareil", "Le laisser refroidir 30 minutes", "Redémarrer"],
+  "important_warnings": ["Ne pas couvrir l'appareil"],
+  "confidence_score": 0.95
 }
 
-Le message doit être formaté comme :
+**Exemple 2 (Problème NON trouvé) :**
+User: "Mon radiateur affiche E999"
+Context: "Codes: E01, E02, E03"
+Response:
+{
+  "product_reference": "RFLC",
+  "diagnostic_help": "Le code erreur E999 n'est pas répertorié dans la documentation technique.",
+  "recommended_actions": [],
+  "important_warnings": [],
+  "confidence_score": 0.1
+}
 
-**Problème identifié : ...**
-
-**Étapes à suivre :**
-1. ...
-2. ...
-3. ...
-
-⚠️ **Avertissements :**
-- ...
+Réponds uniquement en JSON.
 """
 
 
@@ -67,6 +79,7 @@ class DocumentationAIAdapter(BaseAIClient):
         category: str,
         product_reference: str,
         doc_chunks: List[str],
+        user_message: str = "",
     ) -> Dict[str, Any]:
 
         if not doc_chunks:
@@ -92,6 +105,7 @@ class DocumentationAIAdapter(BaseAIClient):
                     "content": f"""
 Produit: {product_reference}
 Catégorie: {category}
+Problème de l'utilisateur: {user_message}
 
 Documentation:
 {context}

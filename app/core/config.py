@@ -15,12 +15,14 @@ class Settings(BaseSettings):
     confidence_threshold_ai: float = 0.5
     
     ai_enabled: bool = True
+    ai_cache_dir: str = os.getenv("AI_CACHE_DIR") or "app/infrastructure/ai/models_cache"
 
     # Ollama API
     ollama_host: str = os.getenv("OLLAMA_HOST") or "https://ollama.com/v1/chat/completions"
     ollama_api_key: str = os.getenv("OLLAMA_API_KEY") or ""
     ollama_model: str = "gemini-3-flash-preview"
     ollama_vision_model: str = "gemini-3-flash-preview"
+    ai_timeout: float = 120.0
 
     model_config = SettingsConfigDict(
         env_file=".env",

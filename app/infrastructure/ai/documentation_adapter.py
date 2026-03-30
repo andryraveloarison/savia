@@ -1,5 +1,3 @@
-# app/infrastructure/ai/documentation_adapter.py
-
 import logging
 from pathlib import Path
 from typing import List
@@ -9,6 +7,8 @@ from langchain_text_splitters import RecursiveCharacterTextSplitter
 from langchain_huggingface import HuggingFaceEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain_community.embeddings import FastEmbedEmbeddings
+
+from app.core.config import get_settings
 
 logger = logging.getLogger("savia")
 
@@ -29,8 +29,15 @@ class DocumentationAdapter:
         self.index_path.mkdir(parents=True, exist_ok=True)
         self.indexes = {}
 
+        settings = get_settings()
+        self.ai_cache_dir = Path(settings.ai_cache_dir)
+        self.ai_cache_dir.mkdir(parents=True, exist_ok=True)
+        
+        logger.info(f"📂 Utilisation du cache AI: {self.ai_cache_dir}")
+
         self.embeddings = FastEmbedEmbeddings(
-            model_name="BAAI/bge-small-en-v1.5"
+            model_name="BAAI/bge-small-en-v1.5",
+            cache_dir=str(self.ai_cache_dir)
         )
 
         self._load_or_build_indexes()
@@ -87,13 +94,13 @@ class DocumentationAdapter:
             else:
                 logger.warning(f"Aucun PDF trouvé dans {category_folder}")
 
-    def query(self, category: str, product_ref: str, top_k: int = 5) -> List[str]:
+    def query(self, category: str, product_ref: str, user_message: str = "", top_k: int = 5) -> List[str]:
         if category not in self.indexes:
             logger.warning(f"Aucun index trouvé pour la catégorie {category}")
             return []
 
         faiss_index = self.indexes[category]
-        query_text = f"Référence produit: {product_ref}"
+        query_text = f"Produit: {product_ref}. Problème: {user_message}"
 
         try:
             results = faiss_index.similarity_search(query_text, k=top_k)

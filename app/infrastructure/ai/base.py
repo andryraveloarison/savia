@@ -12,6 +12,7 @@ class BaseAIClient:
         settings = get_settings()
         self.host = settings.ollama_host
         self.api_key = settings.ollama_api_key
+        self.timeout = settings.ai_timeout
 
     async def post(self, payload):
         headers = {
@@ -19,12 +20,12 @@ class BaseAIClient:
             "Content-Type": "application/json",
         }
 
-        async with httpx.AsyncClient() as client:
+        timeout = httpx.Timeout(self.timeout, connect=20.0)
+        async with httpx.AsyncClient(timeout=timeout) as client:
             response = await client.post(
                 self.host + "/chat/completions",
                 json=payload,
                 headers=headers,
-                timeout=30,
             )
             response.raise_for_status()
             print("HTTP status:", response.status_code)

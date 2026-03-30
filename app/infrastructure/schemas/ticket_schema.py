@@ -40,6 +40,7 @@ class TicketInput(BaseModel):
 
     # 🔥 image support
     image: Optional[ImageInput] = None
+    problem_type: Optional[str] = None
 
     @field_validator("message")
     @classmethod

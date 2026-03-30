@@ -43,6 +43,7 @@ class TicketEntity:
     attachments: list[AttachmentEntity] = field(default_factory=list)
     history: Optional[HistoryEntity] = None
     product_reference: Optional[str] = None
+    problem_type: Optional[str] = None
     
     @property
     def previous_tickets_count(self) -> int:

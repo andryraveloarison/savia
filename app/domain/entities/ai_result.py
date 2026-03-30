@@ -8,4 +8,5 @@ class AIAnalysisResult:
     action: Action | None = None
     confidence_score: float = 0.0
     justifications: list[str] = field(default_factory=list)
+    message_ia: str | None = None
     raw_response: str | None = None

@@ -32,3 +32,10 @@ class DecisionType(str, Enum):
 class CompletenessStatus(str, Enum):
     COMPLETE = "complete"
     INCOMPLETE = "incomplete"
+
+
+class ProblemType(str, Enum):
+    DYSFUNCTION = "dysfonctionnement"
+    TOTAL_STOP = "arrêt total"
+    CONFIGURATION = "configuration"
+    OTHER = "autre"

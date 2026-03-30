@@ -7,18 +7,40 @@ from app.infrastructure.ai.base import BaseAIClient
 
 
 SYSTEM_PROMPT = """
-Tu es un moteur d'analyse SAV.
+Tu es un moteur d'analyse SAV pour équipements de chauffage.
 
-Analyse le ticket et la référence produit.
+Analyse le ticket, le type de problème et la référence produit.
 
-Réponds uniquement en JSON :
+Règles de décision :
+1. Si l'utilisateur n'a pas mis assez d'informations pour diagnostiquer (ex: message trop court, manque de détails sur la panne) :
+   - action : "request_additional_info"
+   - message_ia : Demande précisément ce qui manque (ex: "Veuillez prendre une photo de la plaque signalétique sur votre appareil").
+2. Si les informations sont complètes mais qu'AUCUN document n'a été trouvé pour cette référence :
+   - action : "escalate_to_human"
+   - confidence_score : bas (entre 0.1 et 0.3)
+   - justifications : Préciser qu'aucune documentation n'est disponible.
+3. Si le problème nécessite obligatoirement une intervention physique (ex: fuite d'eau importante, odeur de gaz, court-circuit) :
+   - action : "schedule_intervention"
+   - message_ia : "Une intervention d'un technicien est nécessaire pour résoudre ce problème."
+4. Si c'est très urgent ET que tu n'es pas sûr de la solution :
+   - action : "escalate_to_human"
+5. Sinon, propose une résolution automatique si possible.
+
+Réponds uniquement en JSON.
+
+CONSIGNES IMPORTANTES POUR "message_ia" :
+- Ce champ est UNIQUEMENT destiné à la communication (ex: salutation, demande de précision).
+- NE JAMAIS donner de conseils techniques, NE JAMAIS expliquer un code erreur, NE JAMAIS proposer de réparation.
+- Si le ticket est incomplet, demande poliment ce qui manque.
+- Si le ticket est complet, laisse "message_ia" vide ou mets un simple message d'accueil.
 
 {
-  "category": "<plumbing|electrical|heating|ventilation>",
+  "category": "<heating|plumbing|electrical|ventilation|other>",
   "urgency": "<critical|high|medium|low>",
-  "action": "<schedule_intervention|escalate_to_human|request_additional_info|generate_quote>",
+  "action": "<auto_resolution|request_additional_info|schedule_intervention|generate_quote|escalate_to_human>",
   "confidence_score": <float>,
-  "justifications": ["..."]
+  "justifications": ["..."],
+  "message_ia": "<message de communication uniquement, pas de technique>"
 }
 """
 
@@ -43,7 +65,7 @@ class AIAdapter(BaseAIClient):
     Utilise BaseAIClient pour gérer l'authentification et les requêtes HTTP.
     """
 
-    async def analyze_ticket(self, ticket) -> AIAnalysisResult:
+    async def analyze_ticket(self, ticket, has_documentation: bool = False) -> AIAnalysisResult:
         settings = get_settings()
 
         messages = [
@@ -54,8 +76,13 @@ class AIAdapter(BaseAIClient):
 Ticket:
 {ticket.message}
 
+Type de problème:
+{ticket.problem_type or "Non spécifié"}
+
 Référence produit:
-{ticket.product_reference}
+{ticket.product_reference or "Inconnue"}
+
+Documentation trouvée: {"Oui" if has_documentation else "Non"}
 """
             },
         ]
@@ -103,6 +130,7 @@ Référence produit:
                 confidence_score=float(parsed.get("confidence_score", 0.0)),
                 justifications=parsed.get("justifications", []),
                 raw_response=raw,
+                message_ia=parsed.get("message_ia"),
             )
 
         except Exception as exc:
