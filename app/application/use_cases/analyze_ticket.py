@@ -1,12 +1,6 @@
 from datetime import datetime
-from dataclasses import replace
-from app.infrastructure.ai.vision_adapter import VisionAdapter
-from app.infrastructure.ai.analysis_adapter import AIAdapter
-from app.infrastructure.ai.documentation_adapter import DocumentationAdapter
-from app.infrastructure.ai.documentation_ai_adapter import DocumentationAIAdapter
 from app.domain.entities.ticket import TicketEntity
 from app.infrastructure.ai.registry import ai_registry
-from app.domain.entities.ticket import TicketEntity
 from app.core.config import get_settings
 
 
@@ -14,38 +8,26 @@ async def analyze_ticket(payload):
     settings = get_settings()
 
     product_reference = payload.equipment.model
-    documentation_message = None
-    doc_ai_result = None
-
-    # Vision → détecter référence produit (si pas fournie)
+    
+    # --- LLM CALL 1: VISION (SI BESOIN) ---
     if not product_reference and payload.image:
-        vision_result = await ai_registry.vision.detect_product_reference(
+        vision_result = await ai_registry.vision_agent.process(
             payload.image.content_base64
         )
         product_reference = vision_result.get("product_reference")
 
-    # Recherche documentation (FAISS)
+    # --- RECHERCHE DOCUMENTAIRE (LOCAL / FAISS) ---
     doc_chunks = []
     if product_reference and payload.equipment.type:
-        doc_chunks = ai_registry.documentation.query(
-            payload.equipment.type,
-            product_reference,
+        doc_chunks = await ai_registry.searcher_agent.process(
+            category=payload.equipment.type,
+            product_ref=product_reference,
             user_message=payload.message,
             top_k=5
         )
 
-    # Génération aide technique avec LLM + documentation
-    if doc_chunks:
-        doc_ai_result = await ai_registry.documentation_ai.analyze_documentation(
-            payload.equipment.type,
-            product_reference,
-            doc_chunks,
-            user_message=payload.message
-        )
-        documentation_message = doc_ai_result.get("diagnostic_help")
-
-    # Build Ticket Entity
-    ticket = TicketEntity(
+    # Build Ticket Entity for the agent
+    ticket_entity = TicketEntity(
         ticket_id=payload.ticket_id,
         message=payload.message,
         product_reference=product_reference,
@@ -56,77 +38,45 @@ async def analyze_ticket(payload):
         problem_type=payload.problem_type,
     )
 
-    # AI analysis ticket
-    result = await ai_registry.ai.analyze_ticket(ticket, has_documentation=bool(doc_chunks))
+    # --- LLM CALL 2: ANALYSE UNIFIÉE (DIAGNOSTIC + CLASSIFICATION) ---
+    result = await ai_registry.analyser_agent.process(
+        ticket=ticket_entity,
+        doc_chunks=doc_chunks
+    )
 
-    # Message IA final utilisateur
-    # 🔹 Priorité à la documentation si disponible et pertinente
-    message_ia = None
-    
-    # Si on a un résultat doc avec une confiance décente (>= threshold) et des actions concrètes
-    if doc_ai_result and doc_ai_result.get("confidence_score", 0) >= settings.confidence_threshold_escalate and doc_ai_result.get("recommended_actions"):
-        # On override l'action si c'était plus restrictif
-        if result.action in ["request_additional_info", "escalate_to_human"]:
-             result = replace(
-                 result,
-                 action="auto_resolution",
-                 confidence_score=doc_ai_result["confidence_score"],
-                 justifications=["Solution trouvée dans la documentation technique."]
-             )
+    # --- RÈGLE MÉTIER : SEUIL DE CONFIANCE ---
+    action = result.get("action", "escalate_to_human")
+    confidence_score = result.get("confidence_score", 0.0)
+    message_ia = result.get("message_ia")
+    justifications = result.get("justifications", [])
 
-        message_ia = f"""
-**Problème identifié :** {doc_ai_result.get("diagnostic_help", "")}
+    if action == "auto_resolution" and confidence_score < settings.confidence_threshold_escalate:
+        action = "escalate_to_human"
+        justifications.append(f"Score de confiance ({confidence_score}) insuffisant pour une résolution automatique.")
+        message_ia = "Nous avons consulté la documentation technique mais n'avons pas trouvé de solution précise pour ce problème. Un technicien va vous recontacter."
 
-**Étapes recommandées :**
-"""
-        for step in doc_ai_result.get("recommended_actions", []):
-            message_ia += f"\n- {step}"
-
-        if doc_ai_result.get("important_warnings"):
-            message_ia += "\n\n⚠️ **Avertissements :**\n"
-            for warn in doc_ai_result.get("important_warnings", []):
-                message_ia += f"- {warn}\n"
-    
-    # Si pas de doc ou doc peu fiable, on prend le message de l'agent de classification
-    if not message_ia:
-        message_ia = result.message_ia
-        
-        # Sécurité anti-hallucination : 
-        # Si on a cherché dans la doc (chunks trouvés) mais que la confiance est nulle/basse,
-        # et que l'expert classification pensait avoir trouvé une solution ou voulait escalader,
-        # on doit forcer l'escalade car le classifier ne peut pas "deviner" la solution si la doc ne l'a pas.
-        # MAIS : on ne doit pas écraser une demande d'info (vague) ou une intervention déjà décidée.
-        if doc_chunks and (not doc_ai_result or doc_ai_result.get("confidence_score", 0) < settings.confidence_threshold_escalate):
-            if result.action not in ["request_additional_info", "schedule_intervention"]:
-                result = replace(
-                    result,
-                    confidence_score=doc_ai_result["confidence_score"],
-                    action="escalate_to_human",
-                    justifications=["Problème non résolu via documentation (confiance basse ou inexistant)."]
-                )
-                message_ia = "Nous avons consulté la documentation technique mais n'avons pas trouvé de solution précise pour ce problème. Un technicien va vous recontacter."
-
-    # STEP 8: Response finale (Qualification / Completeness enrichies par result)
+    # STEP 8: Response finale formattée
     return {
         "ticket_id": payload.ticket_id,
         "qualification": {
-            "category": result.category,
-            "urgency": result.urgency,
+            "category": result.get("category", "other"),
+            "urgency": result.get("urgency", "low"),
         },
         "completeness": {
-            "status": "incomplete" if result.action == "request_additional_info" else "complete",
-            "missing_elements": result.justifications if result.action == "request_additional_info" else [],
+            "status": "incomplete" if action == "request_additional_info" else "complete",
+            "missing_elements": justifications if action == "request_additional_info" else [],
         },
         "recommendation": {
-            "action": result.action,
-            "confidence_score": result.confidence_score,
+            "action": action,
+            "confidence_score": confidence_score,
         },
-        "justification": result.justifications,
+        "justification": justifications,
         "audit": {
             "analyzed_at": datetime.utcnow().isoformat(),
-            "engine_version": "v3-rag-multi-agent",
+            "engine_version": "v5-unified-2-llm",
             "decision_type": "AI",
         },
         "product_reference": product_reference,
         "messageIA": message_ia,
+        "diagnostic_help": result.get("diagnostic_help"),
     }
