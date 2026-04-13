@@ -20,7 +20,7 @@ async def analyze_ticket(payload):
     doc_chunks = []
     if product_reference and payload.equipment.type:
         doc_chunks = await ai_registry.searcher_agent.process(
-            category=payload.equipment.type,
+            category=payload.equipment.type, 
             product_ref=product_reference,
             user_message=payload.message,
             top_k=5

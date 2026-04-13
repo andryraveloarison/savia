@@ -37,7 +37,7 @@ class AnalyserAgent(BaseAgent, BaseAIClient):
         prompt_user = f"""
 ### TICKET :
 Message: {ticket.message}
-Référence: {ticket.product_reference or 'Inconnue'}
+Référence: {ticket.product_reference or 'Inconnue'} 
 Type: {ticket.problem_type or 'Non spécifié'}
 
 ### DOCUMENTATION TECHNIQUE :

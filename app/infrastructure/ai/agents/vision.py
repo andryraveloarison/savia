@@ -22,3 +22,4 @@ class VisionAgent(BaseAgent):
         """
         logger.info(f"[{self.name}] Analyse de l'image en cours...")
         return await self.adapter.detect_product_reference(image_base64)
+ 

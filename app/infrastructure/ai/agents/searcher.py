@@ -19,7 +19,7 @@ class SearcherAgent(BaseAgent):
     async def process(
         self, 
         category: str, 
-        product_ref: str, 
+        product_ref: str,  
         user_message: str = "", 
         top_k: int = 5
     ) -> List[str]:
