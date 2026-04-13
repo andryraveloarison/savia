@@ -50,7 +50,7 @@ async def analyze_ticket(payload):
     message_ia = result.get("message_ia")
     justifications = result.get("justifications", [])
 
-    if action == "auto_resolution" and confidence_score < settings.confidence_threshold_escalate:
+    if confidence_score < settings.confidence_threshold_escalate:
         action = "escalate_to_human"
         justifications.append(f"Score de confiance ({confidence_score}) insuffisant pour une résolution automatique.")
         message_ia = "Nous avons consulté la documentation technique mais n'avons pas trouvé de solution précise pour ce problème. Un technicien va vous recontacter."

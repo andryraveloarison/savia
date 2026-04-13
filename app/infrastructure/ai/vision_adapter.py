@@ -2,22 +2,16 @@
 
 import json
 import logging
+from pathlib import Path
 from app.core.config import get_settings
 from app.infrastructure.ai.base import BaseAIClient
 
 logger = logging.getLogger("savia")
 
-VISION_PROMPT = """
-Tu es un agent de reconnaissance produit.
-Analyse l'image et identifie la référence produit.
+_PROMPTS_DIR = Path(__file__).parent / "prompts"
+VISION_PROMPT = (_PROMPTS_DIR / "vision.prompt").read_text(encoding="utf-8")
 
-Réponds uniquement en JSON :
 
-{
-  "product_reference": "<reference ou unknown>",
-  "confidence": <float>
-}
-"""
 
 
 class VisionAdapter(BaseAIClient):
