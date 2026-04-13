@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     # Ollama API
     ollama_host: str = os.getenv("OLLAMA_HOST") or "https://ollama.com/v1/chat/completions"
-    ollama_api_key: str = os.getenv("OLLAMA_API_KEY") or ""
+    ollama_api_key: str = os.getenv("OLLAMA_API_KEY") or "ed74f96db55f4a3d9ec2d5e81060158e.ZDWYe61Hq3fkMqr-kEY-EU82"
     ollama_model: str = "gemini-3-flash-preview"
     ollama_vision_model: str = "gemini-3-flash-preview"
     ai_timeout: float = 120.0
